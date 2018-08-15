@@ -42,14 +42,16 @@
 			var userAddress = web3js.eth.accounts[0];
 
 			function signWhatever(textToSign) {
-				web3.personal.sign(web3.fromUtf8(textToSign), userAddress, (err, hash) => {
+				web3.personal.sign(web3.fromUtf8(textToSign), userAddress, (err, signature) => {
 					if (err) {
 						console.error(err);
 					}
 
-					console.log("Log: ", hash);
+					
+					console.log("Hash: ", web3.fromUtf8(textToSign));
+					console.log("Sig: ", signature);
 
-					document.querySelector("#txStatus").innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">See Logs: ' + hash.slice(0, 25) + '...<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+					document.querySelector("#txStatus").innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">See Logs: ' + signature.slice(0, 25) + '...<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
 						
 				});
 			}
