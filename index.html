@@ -47,8 +47,8 @@
 						console.error(err);
 					}
 
-					
-					console.log("Hash: ", web3.fromUtf8(textToSign));
+					console.log("msg hash: ", web3.sha3(textToSign));
+					console.log("Hex: ", web3.fromUtf8(textToSign));
 					console.log("Sig: ", signature);
 
 					document.querySelector("#txStatus").innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">See Logs: ' + signature.slice(0, 25) + '...<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
