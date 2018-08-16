@@ -19,6 +19,17 @@
   		</div>
   		<button type="button" id="signWhatever" onClick='startApp().signWhatever($("#textarea1").val())' class="btn btn-info">Sign</button>
 
+  		<br>
+
+  		
+  		<div id="vDecimal" rol="alert"></div>
+  		<div id="r" rol="alert"></div>
+  		<div id="s" rol="alert"></div>
+  		<div id="preFixedMsgHash" rol="alert"></div>
+  		
+
+
+
   		<footer id="txStatus" class="fixed-bottom container">
 		</footer>
 	</div>
@@ -51,8 +62,31 @@
 					console.log("Hex: ", web3.fromUtf8(textToSign));
 					console.log("Sig: ", signature);
 
-					document.querySelector("#txStatus").innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">See Logs: ' + signature.slice(0, 25) + '...<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-						
+					signature = signature.substr(2); //remove 0x
+					const r = '0x' + signature.slice(0, 64);
+					const s = '0x' + signature.slice(64, 128);
+					const v = '0x' + signature.slice(128, 130);
+					const vDecimal = web3.toDecimal(v);
+
+					console.log("r: ", r);
+					$("#r").addClass("alert alert-warning").text("r: " + r);
+
+					console.log("s: ", s);
+					$("#s").addClass("alert alert-warning").text("s: " + s);
+
+					console.log("v: ", v);
+					console.log("vDecimal: ", vDecimal);
+					$("#vDecimal").addClass("alert alert-warning").text("vDecimal: " + vDecimal);
+
+
+					// standard prefix msg to prevent signing arbitrary payloads
+					let preFixedMsg = `\x19Ethereum Signed Message:\n${textToSign.length}${textToSign}`;
+					let preFixedMsgHash = web3.sha3(preFixedMsg);
+					console.log("preFixedMsgHash: ", preFixedMsgHash);
+					$("#preFixedMsgHash").addClass("alert alert-warning").text("preFixedMsgHash: " + preFixedMsgHash);
+
+					// document.querySelector("#txStatus").innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">See Logs: ' + signature.slice(0, 25) + '...<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+
 				});
 			}
 
