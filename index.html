@@ -14,11 +14,12 @@
 		<!-- simple sign scheme -->
 
 		<div class="form-group">
-    		<label for="textarea1">Sign whatever</label>
+    		<label for="textarea1">Sign whatever with Metamask</label>
     		<textarea class="form-control" id="textarea1" rows="3"></textarea>
   		</div>
   		<button type="button" id="signWhatever" onClick='startApp().signWhatever($("#textarea1").val())' class="btn btn-info">Sign</button>
 
+  		<br>
   		<br>
 
   		
@@ -28,9 +29,30 @@
   		<div id="preFixedMsgHash" rol="alert"></div>
   		
 
+  		<br>
+  		<br>
+  		<!-- verification form -->
+  		<div class="jumbotron">
+  			<div class="form-group">
+				<label for="preFixedMsgHashInput">preFixedMsgHash</label>
+				<input id="preFixedMsgHashInput" type="text" class="form-control" placeholder="Enter preFixedMsgHash..." required>
+			</div>
+  			<div class="form-group">
+				<label for="vDecimal">vDecimal</label>
+				<input id="vDecimal" type="number" class="form-control" placeholder="Enter vDecimal..." required>
+			</div>
+			<div class="form-group">
+				<label for="rInput">r</label>
+				<input id="rInput" type="text" class="form-control" placeholder="Enter r..." required>
+			</div>
+			<div class="form-group">
+				<label for="sInput">s</label>
+				<input id="sInput" type="text" class="form-control" placeholder="Enter s..." required>
+			</div>
+			<button id="verify" onClick='startApp().verifyAddr($("#preFixedMsgHashInput").val(), $("#vDecimal").val(), $("#rInput").val(), $("#sInput").val())' class="btn btn-primary btn-lg btn-block">Verify</button>
+  		</div>
 
-
-  		<footer id="txStatus" class="fixed-bottom container">
+  		<footer id="sigVerification" class="fixed-bottom container">
 		</footer>
 	</div>
 	<script type="text/javascript">
@@ -51,6 +73,8 @@
 
 		function startApp() {
 			var userAddress = web3js.eth.accounts[0];
+			var verifierContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"_addr","type":"address"},{"name":"msgHash","type":"bytes32"},{"name":"v","type":"uint8"},{"name":"r","type":"bytes32"},{"name":"s","type":"bytes32"}],"name":"isSigned","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"msgHash","type":"bytes32"},{"name":"v","type":"uint8"},{"name":"r","type":"bytes32"},{"name":"s","type":"bytes32"}],"name":"recoverAddr","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"function"}]);
+
 
 			function signWhatever(textToSign) {
 				web3.personal.sign(web3.fromUtf8(textToSign), userAddress, (err, signature) => {
@@ -85,7 +109,7 @@
 					console.log("preFixedMsgHash: ", preFixedMsgHash);
 					$("#preFixedMsgHash").addClass("alert alert-warning").text("preFixedMsgHash: " + preFixedMsgHash);
 
-					// document.querySelector("#txStatus").innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">See Logs: ' + signature.slice(0, 25) + '...<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+					// 
 
 				});
 			}
@@ -110,8 +134,22 @@
 				});
 			}
 
+			function verifyAddr(preFixedMsgHashInput, vDecimal, rInput, sInput) {
+				const contractInstance = verifierContract.at("...");
+
+				contractInstance.recoverAddr.call(preFixedMsgHashInput, vDecimal, rInput, sInput, (err, res) => {
+					if (err) {
+						console.error("Error: ", err);
+					} else {
+						// do something with res
+						document.querySelector("#sigVerification").innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert">Returned addr: ' + res + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+					}
+				});
+			}
+
 			return {
-				signWhatever
+				signWhatever,
+				verifyAddr
 			}
 		}
 	</script>
