@@ -39,7 +39,7 @@
 			</div>
   			<div class="form-group">
 				<label for="vDecimal">vDecimal</label>
-				<input id="vDecimal" type="number" class="form-control" placeholder="Enter vDecimal..." required>
+				<input id="vDecimalInput" type="number" class="form-control" placeholder="Enter vDecimal..." required>
 			</div>
 			<div class="form-group">
 				<label for="rInput">r</label>
@@ -49,7 +49,7 @@
 				<label for="sInput">s</label>
 				<input id="sInput" type="text" class="form-control" placeholder="Enter s..." required>
 			</div>
-			<button id="verify" onClick='startApp().verifyAddr($("#preFixedMsgHashInput").val(), $("#vDecimal").val(), $("#rInput").val(), $("#sInput").val())' class="btn btn-primary btn-lg btn-block">Verify</button>
+			<button id="verify" onClick='startApp().verifyAddr($("#preFixedMsgHashInput").val(), $("#vDecimalInput").val(), $("#rInput").val(), $("#sInput").val())' class="btn btn-primary btn-lg btn-block">Verify</button>
   		</div>
 
   		<footer id="sigVerification" class="fixed-bottom container">
@@ -134,10 +134,15 @@
 				});
 			}
 
-			function verifyAddr(preFixedMsgHashInput, vDecimal, rInput, sInput) {
-				const contractInstance = verifierContract.at("...");
+			function verifyAddr(preFixedMsgHashInput, vDecimalInput, rInput, sInput) {
 
-				contractInstance.recoverAddr.call(preFixedMsgHashInput, vDecimal, rInput, sInput, (err, res) => {
+
+				const contractInstance = verifierContract.at("0xe5F9617C8bb134F27222f36257EACDBDB1ec427a");
+
+				contractInstance.recoverAddr.call(preFixedMsgHashInput, vDecimalInput, rInput, sInput, (err, res, arg1) => {
+					console.log("res: ", res);
+					console.log("arg1: ", arg1);
+
 					if (err) {
 						console.error("Error: ", err);
 					} else {
